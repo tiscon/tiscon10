@@ -167,6 +167,17 @@ public class EstimateController {
             return "confirm";   // 確認画面表示を指示
         }
 
+        // 誕生日
+        LocalDate dateOfBirth = LocalDate.parse(userOrderForm.dateOfBirth(), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        // 年齢が範囲内であるか確認する
+        if (!estimateService.isAgeValid(dateOfBirth)) {
+            // エラーの場合、Formの生年月日の項目にFieldErrorを追加
+            result.addError(new FieldError("userOrderForm", "dateOfBirth",
+                "年齢は20歳以上100歳以下である必要があります"));
+            model.addAttribute("errors", result.getAllErrors());
+            return "confirm";  // 確認画面表示を指示
+        }
+
         //データベースに見積もり依頼を登録する。
         InsuranceOrder insuranceOrder = new InsuranceOrder(
             null,  // 受付番号はデータベース登録時に自動採番されるためnullを設定

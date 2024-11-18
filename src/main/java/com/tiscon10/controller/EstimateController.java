@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -105,13 +106,21 @@ public class EstimateController {
             return "confirm";  // 確認画面表示を指示
         }
 
-        // 誕生日と保険種別をもとに、保険料（年額）を算出する
         // 誕生日
         LocalDate dateOfBirth = LocalDate.parse(userOrderForm.dateOfBirth(), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        // 年齢が範囲内であるか確認する
+        if (!estimateService.isAgeValid(dateOfBirth)) {
+            // エラーの場合、Formの生年月日の項目にFieldErrorを追加
+            result.addError(new FieldError("userOrderForm", "dateOfBirth",
+                "年齢は20歳以上100歳以下である必要があります"));
+            model.addAttribute("errors", result.getAllErrors());
+            return "confirm";  // 確認画面表示を指示
+        }
+
         // 保険種別
         int insuranceType = Integer.parseInt(userOrderForm.insuranceType());
 
-        // 見積もり結果
+        // 誕生日と保険種別をもとに、保険料（年額）を算出する
         EstimateResult estimateResult = estimateService.calculateInsuranceFee(insuranceType, dateOfBirth);
         model.addAttribute("estimateResult", estimateResult);
 

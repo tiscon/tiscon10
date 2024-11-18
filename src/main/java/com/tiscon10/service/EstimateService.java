@@ -72,12 +72,23 @@ public class EstimateService {
     }
 
     /**
+     * 生年月日と現在日付から年齢を計算し、年齢が20歳以上100歳以下であるかを判定する。
+     *
+     * @param dateOfBirth 生年月日
+     * @return 年齢が20歳以上100歳以下である場合、真
+     */
+    public boolean isAgeValid(LocalDate dateOfBirth) {
+        int age = calculateAge(dateOfBirth);
+        return age >= 20 && age <= 100;
+    }
+
+    /**
      * 生年月日と現在日付から年齢を計算する。
      *
      * @param dateOfBirth 生年月日
      * @return 現在の年齢
      */
-    public int calculateAge(LocalDate dateOfBirth) {
+    private int calculateAge(LocalDate dateOfBirth) {
         LocalDate currentDate = LocalDate.now();
         Period period = Period.between(dateOfBirth, currentDate);
         return period.getYears();

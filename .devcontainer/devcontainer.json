@@ -1,5 +1,5 @@
 {
-    "postCreateCommand": "sdk use java 21.0.2-ms && git config pull.rebase false",
+    "postCreateCommand": "git config pull.rebase false",
     // Codespaces立ち上げ時に自動で記載の拡張機能をインストールする
     // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
     "customizations": {

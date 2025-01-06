@@ -1,15 +1,40 @@
 package com.tiscon10.viewhelper;
 
-import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.Options;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+
+import com.github.jknack.handlebars.Helper;
+import com.github.jknack.handlebars.Options;
+
 /**
  * Spring MVCでHandlebars.javaを使用するためのヘルパークラス。
+ *
+ * {@link BINDING_RESULT_KEY}, {@link HasFieldErrorsHelper}, {@link FieldErrorsHelper} を組み合わせて
+ * Handlebars側でのエラーの表示を1つずつ個別に表示させたい場合に使用することができる。
+ *
+ * 以下に、入力画面における個別エラー表示の例を示す。
+ * なお、どの画面のどの部分にエラーを表示させたいかによって、実装例の一部の内容は異なるため、注意すること。
+ *
+ * Controllerの実装例
+ * if (result.hasErrors()) {
+ *   // エラーを表示するために、BindingResultをModelに格納する
+ *   model.addAttribute(SpringMVCHelper.BINDING_RESULT_KEY, result);
+ *   return "input";
+ * }
+ *
+ * Handlebarsの実装例
+ * <label>
+ *   氏名
+ *   <input type="text" name="kanjiName" value="{{userOrderForm.kanjiName}}"/>
+ * </label>
+ * {#hasFieldErrors "kanjiName"}}
+ *    <ul>
+ *      {{#fieldErrors "kanjiName"}}<li>{{this}}</li>{{/fieldErrors}}
+ *    </ul>
+ * {{/hasFieldErrors}}
  */
 public class SpringMVCHelper {
 
@@ -22,18 +47,14 @@ public class SpringMVCHelper {
 
     /**
      * {@link BindingResult#hasFieldErrors(String)}をHandlebarsで扱うためのHelper。
-     * 引数で指定したフィールドにエラーがあるかどうかをチェックする。
      *
+     * 引数で指定したフィールドにエラーがあるかどうかをチェックする。
      * 指定した項目にエラーがある場合は、ブロック内の処理が実行される。
      *
-     * 使用例
-     * <code><pre>
+     * Handlebarsにおける使用例
      * {{#hasFieldErrors "kanjiName"}}
-     *    <ul>
-     *      {{#fieldErrors "kanjiName"}}<li style="color: red;">{{this}}</li>{{/fieldErrors}}
-     *    </ul>
+     *    <!-- エラーがある場合に、ここに書いた処理が実行される -->
      * {{/hasFieldErrors}}
-     * </pre></code>
      *
      */
     public static class HasFieldErrorsHelper implements Helper<String> {
@@ -56,29 +77,20 @@ public class SpringMVCHelper {
 
     /**
      * {@link BindingResult#getFieldErrors(String)}をHandlebarsで扱うためのHelper。
+     *
      * 引数で指定したフィールドのエラー情報を出力する。
      *
      * 指定した項目にエラーがある場合は、ブロック内の処理が実行される。
      * エラーメッセージは、{@code this}で出力できる。
      * エラーが複数ある場合は、ループで1つずつ出力される。
      *
-     * 使用例
-     * <code><pre>
-     *
-     * {{#fieldErrors "kanjiName"}}
-     *    <span style="color: red;">{{this}}</span>
-     * {{/fieldErrors}}
-     *
-     * </pre></code>
+     * Handlebarsにおける使用例
+     * {{#fieldErrors "kanjiName"}}<li>{{this}}</li>{{/fieldErrors}}
      *
      * エラーが2件ある場合は以下のようにレンダリングされる。
      *
-     * <code><pre>
-     *
-     * <span style="color: red;">10文字以内で入力してください</span>
-     * <span style="color: red;">カタカナで入力してください</span>
-     *
-     * </pre></code>
+     * <span>10文字以内で入力してください</span>
+     * <span>カタカナで入力してください</span>
      *
      */
     public static class FieldErrorsHelper implements Helper<String> {

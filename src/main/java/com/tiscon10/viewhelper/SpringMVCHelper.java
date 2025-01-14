@@ -30,7 +30,7 @@ import com.github.jknack.handlebars.Options;
  *   氏名
  *   <input type="text" name="kanjiName" value="{{userOrderForm.kanjiName}}"/>
  * </label>
- * {#hasFieldErrors "kanjiName"}}
+ * {{#hasFieldErrors "kanjiName"}}
  *    <ul>
  *      {{#fieldErrors "kanjiName"}}<li>{{this}}</li>{{/fieldErrors}}
  *    </ul>
